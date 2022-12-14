@@ -20,22 +20,6 @@ import kotlin.math.log2
  * For information on what the different fields extracted from the NBT are, see [Chunk Format on the Minecraft wiki](https://minecraft.fandom.com/wiki/Chunk_format)
  */
 class ChunkSectionReader constructor(val version: SupportedVersion, val nbt: NBTCompound) {
-
-    companion object {
-        /**
-         * Gets the Y value of the section.
-         * Inside a companion object as ChunkSection needs it very early in its construction
-         */
-        @Throws(AnvilException::class)
-        @JvmStatic
-        fun getY(nbt: NBTCompound) = nbt.getByte("Y") ?: AnvilException.missing("Y")
-    }
-
-    /**
-     * Gets the Y value of the section.
-     */
-    val y = getY(nbt)
-
     fun isSectionEmpty() = getBlockPalette() == null
 
     fun getBlockPalette() = when {

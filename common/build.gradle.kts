@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     `maven-publish`
     id("convention.publication")
@@ -19,6 +17,18 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["java"])
+        }
+    }
+    publishing {
+        repositories {
+            maven {
+                name = "MeProjectMaven"
+                url = uri("https://repo.rustme.net/private")
+                credentials(PasswordCredentials::class)
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+            }
         }
     }
 }

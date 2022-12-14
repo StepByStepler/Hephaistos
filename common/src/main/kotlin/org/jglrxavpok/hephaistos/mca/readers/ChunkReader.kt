@@ -2,6 +2,7 @@ package org.jglrxavpok.hephaistos.mca.readers
 
 import org.jglrxavpok.hephaistos.mca.*
 import org.jglrxavpok.hephaistos.mcdata.Biome
+import org.jglrxavpok.hephaistos.mcdata.VanillaMaxY
 import org.jglrxavpok.hephaistos.nbt.*
 
 /**
@@ -79,13 +80,8 @@ class ChunkReader @Throws(AnvilException::class) constructor(val chunkData: NBTC
             minY = (minSectionY.toInt()+1).sectionToBlock()
             maxY = (biomes.size / ChunkSection.BiomeArraySize).sectionToBlock() + minY -1
         } else {
-            minY = (levelData.getInt("yPos") ?: AnvilException.missing("yPos")).sectionToBlock()
-            maxY = minY
-
-            for(nbt in getSections()) {
-                val sectionY = nbt.getByte("Y") ?: AnvilException.missing("Y")
-                maxY = maxOf(maxY, sectionY.toInt().sectionToBlock()+15)
-            }
+            minY = (levelData.getInt("yPos") ?: -4).sectionToBlock()
+            maxY = VanillaMaxY
         }
 
         return minY .. maxY
@@ -201,9 +197,8 @@ class ChunkReader @Throws(AnvilException::class) constructor(val chunkData: NBTC
      * Can return null if none found.
      * Use this method to avoid caring about 1.18+/pre-1.18 biome format.
      */
-    fun readSectionBiomes(chunkSectionReader: ChunkSectionReader): SectionBiomeInformation? {
+    fun readSectionBiomes(sectionY: Byte, chunkSectionReader: ChunkSectionReader): SectionBiomeInformation? {
         val yRange = getYRange()
-        val sectionY = chunkSectionReader.y
         if(sectionY*16 !in yRange) {
             throw AnvilException("Accessing a section outside of the chunk! (SectionY=$sectionY Y=${sectionY*16} but minY..maxY is ${yRange.first}..${yRange.last})")
         }
