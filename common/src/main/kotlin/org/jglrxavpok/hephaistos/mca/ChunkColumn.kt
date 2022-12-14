@@ -9,6 +9,7 @@ import org.jglrxavpok.hephaistos.mca.writer.ChunkWriter
 import org.jglrxavpok.hephaistos.mcdata.*
 import org.jglrxavpok.hephaistos.mcdata.Biome
 import org.jglrxavpok.hephaistos.nbt.*
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * 16x16 (XZ) vertical slice of the world. Consists of ChunkSections vertically stacked (each of height 16 blocks).
@@ -161,13 +162,9 @@ class ChunkColumn {
 
         postProcessing = chunkReader.getPostProcessing()
 
-        for(nbt in sectionsNBT) {
-            val sectionY = nbt.getByte("Y") ?: missing("Y")
-            if(version < SupportedVersion.MC_1_17_0) {
-                if(sectionY !in 0..15)
-                    continue
-            }
-            sections[sectionY] = ChunkSection(nbt, version)
+        for ((index, nbt) in sectionsNBT.withIndex()) {
+            val sectionY = (index - 4).toByte()
+            sections[sectionY] = ChunkSection(sectionY, nbt, version)
         }
 
         if(version < SupportedVersion.MC_1_18_PRE_4) {

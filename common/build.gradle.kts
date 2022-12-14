@@ -20,4 +20,16 @@ publishing {
             from(components["java"])
         }
     }
+    publishing {
+        repositories {
+            maven {
+                name = "MeProjectMaven"
+                url = uri("https://repo.rustme.net/private")
+                credentials(PasswordCredentials::class)
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+            }
+        }
+    }
 }

@@ -267,7 +267,7 @@ class RegionFile @Throws(AnvilException::class, IOException::class) @JvmOverload
         if(column.minY < minY)
             throw AnvilException("ChunkColumn minY must be >= to RegionFile minY")
         if(column.maxY > maxY)
-            throw AnvilException("ChunkColumn maxY must be <= to RegionFile maxY")
+            throw AnvilException("ChunkColumn maxY must be <= to RegionFile maxY (got ${column.maxY} > $maxY)")
 
         val nbt = column.toNBT(version)
         writeColumnData(nbt, column.x, column.z)
@@ -379,7 +379,7 @@ class RegionFile @Throws(AnvilException::class, IOException::class) @JvmOverload
     @Throws(AnvilException::class, IllegalArgumentException::class)
     fun setBlockState(x: Int, y: Int, z: Int, blockState: BlockState) {
         if(out(x.blockToChunk(), z.blockToChunk())) throw IllegalArgumentException("Out of region $x;$z (block)")
-        if(y !in 0..255) throw IllegalArgumentException("y ($y) must be in 0..255")
+        if(y !in minY..maxY) throw IllegalArgumentException("y ($y) must be in $minY..$maxY")
 
         val chunk = getOrCreateChunk(x.blockToChunk(), z.blockToChunk())
         chunk.setBlockState(x.blockInsideChunk(), y, z.blockInsideChunk(), blockState)
@@ -398,7 +398,7 @@ class RegionFile @Throws(AnvilException::class, IOException::class) @JvmOverload
     @Throws(AnvilException::class, IllegalArgumentException::class)
     fun getBlockState(x: Int, y: Int, z: Int): BlockState {
         if(out(x.blockToChunk(), z.blockToChunk())) throw IllegalArgumentException("Out of region $x;$z (block)")
-        if(y !in 0..255) throw IllegalArgumentException("y ($y) must be in 0..255")
+        if(y !in minY..maxY) throw IllegalArgumentException("y ($y) must be in $minY..$maxY")
 
         val chunk = getChunk(x.blockToChunk(), z.blockToChunk()) ?: throw AnvilException("No chunk at $x,$y,$z")
         return chunk.getBlockState(x.blockInsideChunk(), y, z.blockInsideChunk())
@@ -416,7 +416,7 @@ class RegionFile @Throws(AnvilException::class, IOException::class) @JvmOverload
     @Throws(AnvilException::class, IllegalArgumentException::class)
     fun setBiome(x: Int, y: Int, z: Int, biomeID: String) {
         if(out(x.blockToChunk(), z.blockToChunk())) throw IllegalArgumentException("Out of region $x;$z (block)")
-        if(y !in 0..255) throw IllegalArgumentException("y ($y) must be in 0..255")
+        if(y !in minY..maxY) throw IllegalArgumentException("y ($y) must be in $minY..$maxY")
 
         val chunk = getOrCreateChunk(x.blockToChunk(), z.blockToChunk())
         chunk.setBiome(x.blockInsideChunk(), y, z.blockInsideChunk(), biomeID)
@@ -436,7 +436,7 @@ class RegionFile @Throws(AnvilException::class, IOException::class) @JvmOverload
     @Throws(AnvilException::class, IllegalArgumentException::class)
     fun getBiome(x: Int, y: Int, z: Int): String {
         if(out(x.blockToChunk(), z.blockToChunk())) throw IllegalArgumentException("Out of region $x;$z (block)")
-        if(y !in 0..255) throw IllegalArgumentException("y ($y) must be in 0..255")
+        if(y !in minY..maxY) throw IllegalArgumentException("y ($y) must be in $minY..$maxY")
 
         val chunk = getChunk(x.blockToChunk(), z.blockToChunk()) ?: throw AnvilException("No chunk at $x,$y,$z")
         return chunk.getBiome(x.blockInsideChunk(), y, z.blockInsideChunk())

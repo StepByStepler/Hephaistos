@@ -42,7 +42,7 @@ class ChunkSection(val y: Byte) {
      */
     @Throws(AnvilException::class)
     @JvmOverloads
-    constructor(nbt: NBTCompound, version: SupportedVersion = SupportedVersion.Latest): this(ChunkSectionReader.getY(nbt)) {
+    constructor(y: Byte, nbt: NBTCompound, version: SupportedVersion = SupportedVersion.Latest): this(y) {
         if(version < SupportedVersion.MC_1_17_0) {
             if(y !in 0..15)
                 throw AnvilException("Invalid section Y: $y. Must be in 0..15 for pre-1.17 sections")
@@ -83,9 +83,13 @@ class ChunkSection(val y: Byte) {
             it.copyInto(skyLights)
         }
 
-        val (biomesArray, baseBiomeValue) = reader.getBiomeInformation()
+        val data = reader.getBiomeInformation()
+        val (biomesArray, baseBiomeValue) = data
         biomes = biomesArray
         baseBiome = baseBiomeValue ?: Biome.UnknownBiome
+        if (biomesArray == null)  {
+            biomes = Array(4*4*4) { baseBiome }
+        }
     }
 
     /**
